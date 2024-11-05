@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  
+
+  blockchain:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7545:7545"
+    networks:
+      - dapp-network
+networks:
+  dapp-network:
+    driver: bridge

@@ -1,0 +1,11 @@
+# Usa Node como imagen base
+FROM node:16-bullseye-slim
+
+# Instala Ganache CLI globalmente
+RUN npm install -g ganache
+
+# Expone el puerto de Ganache
+EXPOSE 7545
+
+# Comando para iniciar Ganache con 10 cuentas y saldo inicial
+CMD ["ganache", "--host", "0.0.0.0", "--port", "7545", "--accounts", "10", "--defaultBalanceEther", "100"]
