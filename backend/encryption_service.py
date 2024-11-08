@@ -1,6 +1,5 @@
 import hashlib
 import os
-import textract
 
 import pdfplumber
 from docx import Document

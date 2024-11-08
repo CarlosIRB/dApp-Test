@@ -16,22 +16,26 @@ App = {
     } else {
       console.log("No ethereum browser is installed. Try installing MetaMask.");
     }
+    console.log("web3 initialized");
   },
   loadAccount: async () => {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
     App.account = accounts[0];
+    console.log("account loaded");
   },
   loadContract: async () => {
     try {
-      const res = await fetch("RegistrosContract.json");
+      console.log("loading contract");
+      const res = await fetch(`http://localhost:3000/contracts/RegistrosContract.json`);
       const registrosContractJSON = await res.json();
       App.contracts.RegistrosContract = TruffleContract(registrosContractJSON);
       App.contracts.RegistrosContract.setProvider(App.web3Provider);
 
       App.registrosContract = await App.contracts.RegistrosContract.deployed();
     } catch (error) {
+      console.log("Loading contract error");
       console.error(error);
     }
   },
@@ -39,6 +43,7 @@ App = {
     document.getElementById("account").innerText = App.account;
   },
   renderRegistros: async () => {
+    console.log("rendering registros");
     const registrosCounter = await App.registrosContract.registrosCounter();
     const registrosCounterNumber = registrosCounter.toNumber();
 

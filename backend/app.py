@@ -59,5 +59,10 @@ def eliminar_registro(registro_id):
     registros = [r for r in registros if r['id'] != registro_id]
     return jsonify({"message": "Registro eliminado"}), 200
 
+#ruta de prueba para comprobar el servicio
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({"message": "Servicio en línea"})
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

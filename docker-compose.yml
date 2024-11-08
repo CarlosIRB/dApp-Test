@@ -1,15 +1,45 @@
 version: '3.8'
-services:
-  
 
-  blockchain:
+services:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "7545:7545"
+      - "5000:5000"
+    container_name: backend-container
     networks:
-      - dapp-network
+      - app-network
+
+  ganache:
+    #image: trufflesuite/ganache-cli
+    build:
+      context: .
+      dockerfile: Dockerfile.ganache
+    ports:
+      - "7545:7545"
+    #command: ganache-cli -p 7545 -h 0.0.0.0 -a 10 -e 100
+    networks:
+      - app-network
+    container_name: ganache-container
+
+  truffle:
+    build:
+      context: .
+      dockerfile: Dockerfile.truffle
+    depends_on:
+      - ganache
+      - backend
+    environment:
+      - GANACHE_HOST=ganache
+      - GANACHE_PORT=7545
+    networks:
+      - app-network
+    ports:
+      - "3001:3001"
+      - "3000:3000"
+    container_name: truffle-container
+
 networks:
-  dapp-network:
+  app-network:
     driver: bridge

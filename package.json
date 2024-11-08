@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@truffle/contract": "^4.6.31"
+    "@truffle/contract": "^4.6.31",
+    "express": "^4.21.1"
   }
 }

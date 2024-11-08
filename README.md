@@ -52,6 +52,9 @@ Importa una de las 10 direcciones de Ganache como cuenta principal
 7. Correr el servidor de desarrollo:
    `lite-server --config bs-config.json`
 
+8. Correr el servicio de exposición del smart contract
+   `node cliente/exportContract.js`
+
 8. Abrir la aplicación en tu navegador:
 Ve a http://localhost:3001 en tu navegador (o lo definido en bs-config.json)
 
@@ -75,3 +78,13 @@ Ejecuta las migraciones en una red pública:
 Contribuciones
 Contribuciones bienvenidas! Consulta el archivo CONTRIBUTING.md para detalles sobre cómo contribuir.
 
+## Instrucciones de ejecucion con docker
+
+Para ejecutar el mismo proyecto dockerizado
+
+Ejecuta `docker-compose up --build` desde la carpeta raiz
+
+Esto creara un contenedor con 3 imagenes
+- la del servicio en python de encryptacion
+- el simulado de blockchain con ganache 
+- y una ultima para la creacion del contrato inteligente con el servicio frontend.

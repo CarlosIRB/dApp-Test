@@ -31,10 +31,12 @@ form.onsubmit = async (event) => {
     }
 
     // Enviar archivos al backend
-    const response = await fetch('http://127.0.0.1:5000/upload', {
+    const response = await fetch('http://localhost:5000/upload', {
         method: 'POST',
         body: formData
     });
+
+    console.log("Se subio un archivo")
     const registros = await response.json();
 
     // Guardar en Dexie y actualizar la pantalla
