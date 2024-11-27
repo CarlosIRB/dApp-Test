@@ -1,45 +1,48 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  backend-file-validation:
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    image: carlosrb1/backend-file-validation:latest
     ports:
       - "5000:5000"
-    container_name: backend-container
     networks:
-      - app-network
+      - file-validation-network
+    container_name: backend-file-validation
 
-  ganache:
-    #image: trufflesuite/ganache-cli
-    build:
-      context: .
-      dockerfile: Dockerfile.ganache
+
+  ganache-file-validation:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.ganache
+    image: carlosrb1/ganache-file-validation:latest
     ports:
       - "7545:7545"
     #command: ganache-cli -p 7545 -h 0.0.0.0 -a 10 -e 100
     networks:
-      - app-network
-    container_name: ganache-container
+      - file-validation-network
+    container_name: ganache-file-validation
 
-  truffle:
-    build:
-      context: .
-      dockerfile: Dockerfile.truffle
+  truffle-file-validation:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.truffle
+    image: carlosrb1/truffle-file-validation:latest
     depends_on:
-      - ganache
-      - backend
+      - ganache-file-validation
+      - backend-file-validation
     environment:
-      - GANACHE_HOST=ganache
+      - GANACHE_HOST=ganache-file-validation
       - GANACHE_PORT=7545
     networks:
-      - app-network
+      - file-validation-network
     ports:
       - "3001:3001"
       - "3000:3000"
-    container_name: truffle-container
+    container_name: truffle-file-validation
 
 networks:
-  app-network:
+  file-validation-network:
     driver: bridge

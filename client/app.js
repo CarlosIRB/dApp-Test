@@ -1,3 +1,4 @@
+let registros = [];
 App = {
   contracts: {},
   init: async () => {
@@ -5,7 +6,7 @@ App = {
     await App.loadAccount();
     await App.loadContract();
     await App.render();
-    await App.renderRegistros(); // Llamada a la nueva función para renderizar los registros
+    await App.renderRegistros();
   },
   loadWeb3: async () => {
     if (window.ethereum) {
@@ -28,8 +29,11 @@ App = {
   loadContract: async () => {
     try {
       console.log("loading contract");
-      const res = await fetch(`http://localhost:3000/contracts/RegistrosContract.json`);
+      const res = await fetch(
+        `http://localhost:3000/contracts/RegistrosContract.json`
+      );
       const registrosContractJSON = await res.json();
+      console.log(registrosContractJSON);
       App.contracts.RegistrosContract = TruffleContract(registrosContractJSON);
       App.contracts.RegistrosContract.setProvider(App.web3Provider);
 
@@ -48,11 +52,12 @@ App = {
     const registrosCounterNumber = registrosCounter.toNumber();
 
     let html = "";
+    registros = [];
 
     for (let i = 1; i <= registrosCounterNumber; i++) {
       try {
         const registro = await App.registrosContract.getRegistro(i);
- 
+
         const registroId = registro[0];
         const registroName = registro[1];
         const registroTextHash = registro[2];
@@ -60,24 +65,32 @@ App = {
         const registroCreatedAt = registro[4];
 
         if (registroId > 0) {
+          registros.push({
+            id: registroId,
+            name: registroName,
+            textHash: registroTextHash,
+            metaHash: registroMetaHash,
+            createdAt: registroCreatedAt,
+          });
 
-          // Crear un elemento de registro con un botón de eliminar
-          let registroElement = `<div class="card bg-dark mb-2">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <span>${registroName}</span>
-            <button class="btn btn-danger btn-sm" data-id="${registroId}" onclick="App.deleteRegistro(${registroId})">Eliminar</button>
-          </div>
-          <div class="card-body">
-            <p><strong>Text Hash:</strong> ${registroTextHash}</p>
-            <p><strong>Meta Hash:</strong> ${registroMetaHash}</p>
-            <p class="text-muted">${
-              registroCreatedAt > 0
-                ? "Created at " +
-                  new Date(registroCreatedAt * 1000).toLocaleString()
-                : ""
-            }</p>
-          </div>
-        </div>`;
+          let registroElement = `<div class="card bg-dark mb-2" data-name="${registroName}" data-date="${registroCreatedAt}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>${registroName}</span>
+        <p class="text-muted">${
+          registroCreatedAt > 0
+            ? "Created at " +
+              new Date(registroCreatedAt * 1000).toLocaleString()
+            : ""
+        }</p>
+        <hr/>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="setValidationData('${registroTextHash}','${registroMetaHash}')">View Details</button>
+          <hr/>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#validationModal" onclick="setValidationData('${registroTextHash}','${registroMetaHash}')">Validate</button>
+          <button class="btn btn-danger btn-sm" data-id="${registroId}" onclick="App.deleteRegistro(${registroId})">Eliminar</button>
+        </div>
+      </div>`;
 
           html += registroElement;
         }
@@ -86,7 +99,7 @@ App = {
       }
     }
 
-    document.querySelector("#registros").innerHTML = html; // Asegúrate de tener un contenedor con este ID
+    document.querySelector("#registros").innerHTML = html;
   },
   createRegistro: async (name, textHash, metaHash) => {
     try {
@@ -100,7 +113,7 @@ App = {
       );
       console.log(result.logs[0].args);
       window.location.reload();
-      await App.renderRegistros()
+      await App.renderRegistros();
     } catch (error) {
       console.error(error);
     }
@@ -116,3 +129,49 @@ App = {
     }
   },
 };
+
+function searchRegistros() {
+  const searchQuery = document.getElementById("search").value.toLowerCase(); 
+  const filteredRegistros = registros.filter((registro) => {
+    const nameMatch = registro.name.toLowerCase().includes(searchQuery);
+    const dateMatch = new Date(registro.createdAt * 1000)
+      .toLocaleString()
+      .toLowerCase()
+      .includes(searchQuery);
+    return nameMatch || dateMatch;
+  });
+
+  renderFilteredRegistros(filteredRegistros);
+}
+
+function renderFilteredRegistros(filteredRegistros) {
+  let html = "";
+  filteredRegistros.forEach((registro) => {
+    let registroElement = `<div class="card bg-dark mb-2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>${registro.name}</span>
+      <p class="text-muted">${
+        registro.createdAt > 0
+          ? "Created at " + new Date(registro.createdAt * 1000).toLocaleString()
+          : ""
+      }</p>
+      <hr/>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="setValidationData('${
+          registro.textHash
+        }','${registro.metaHash}')">View Details</button>
+        <hr/>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#validationModal" onclick="setValidationData('${
+          registro.textHash
+        }','${registro.metaHash}')">Validate</button>
+        <button class="btn btn-danger btn-sm" data-id="${
+          registro.id
+        }" onclick="App.deleteRegistro(${registro.id})">Eliminar</button>
+      </div>
+    </div>`;
+    html += registroElement;
+  });
+
+  document.querySelector("#registros").innerHTML = html;
+}

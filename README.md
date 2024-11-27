@@ -53,7 +53,7 @@ Importa una de las 10 direcciones de Ganache como cuenta principal
    `lite-server --config bs-config.json`
 
 8. Correr el servicio de exposición del smart contract
-   `node cliente/exportContract.js`
+   `node client/exportContract.js`
 
 8. Abrir la aplicación en tu navegador:
 Ve a http://localhost:3001 en tu navegador (o lo definido en bs-config.json)
@@ -82,9 +82,42 @@ Contribuciones bienvenidas! Consulta el archivo CONTRIBUTING.md para detalles so
 
 Para ejecutar el mismo proyecto dockerizado
 
-Ejecuta `docker-compose up --build` desde la carpeta raiz
+Ejecuta `docker-compose up` desde la carpeta raiz
 
 Esto creara un contenedor con 3 imagenes
 - la del servicio en python de encryptacion
 - el simulado de blockchain con ganache 
 - y una ultima para la creacion del contrato inteligente con el servicio frontend.
+
+## O usar una ejecucion individual
+
+docker network create file-validation-network
+
+docker run -d --name ganache-file-validation -p 7545:7545 --network file-validation-network carlosrb1/ganache-file-validation:1.0
+
+docker run -d --name backend-file-validation -p 5000:5000 --network file-validation-network carlosrb1/backend-file-validation:1.0
+
+docker run -d --name truffle-file-validation -e GANACHE_HOST=ganache-file-validation -e GANACHE_PORT=7545 -p 3001:3001 -p 3000:3000 --network file-validation-network carlosrb1/truffle-file-validation:1.2
+
+
+## Instrucciones de creación de imagenes
+
+Docker login -u carlosrb1
+password: ***********
+
+docker build -t carlosrb1/backend-file-validation:1.0 ./backend
+docker push carlosrb1/backend-file-validation:1.0
+docker tag carlosrb1/backend-file-validation:1.0 carlosrb1/backend-file-validation:latest
+docker push carlosrb1/backend-file-validation:latest
+
+docker build -t carlosrb1/ganache-file-validation:1.0 -f Dockerfile.ganache .
+docker push carlosrb1/ganache-file-validation:1.0
+docker tag carlosrb1/ganache-file-validation:1.0 carlosrb1/ganache-file-validation:latest
+docker push carlosrb1/ganache-file-validation:latest
+
+
+docker build -t carlosrb1/truffle-file-validation:1.2 -f Dockerfile.truffle .
+docker push carlosrb1/truffle-file-validation:1.2
+docker tag carlosrb1/truffle-file-validation:1.2 carlosrb1/truffle-file-validation:latest
+docker push carlosrb1/truffle-file-validation:latest
+

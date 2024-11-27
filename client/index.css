@@ -50,7 +50,8 @@ button {
   background: none;
 }
 
-#new-task-submit {
+#new-task-submit,
+#validate-file-submit {
   color: var(--pink);
   font-size: 1.25rem;
   font-weight: 700;
@@ -106,6 +107,7 @@ main {
   background-color: var(--darkest);
   padding: 1rem;
   border-radius: 1rem;
+  border: none;
   margin-bottom: 1rem;
 }
 
@@ -191,4 +193,34 @@ main {
 
 .task .actions .delete {
   color: crimson;
+}
+
+/* Estilo para el texto dentro del modal */
+#detailModal .modal-body p {
+  color: black;
+  word-wrap: break-word;
+  white-space: normal;
+  max-height: 400px;
+  overflow-y: auto;
+}
+#detailModal .modal-title {
+  color: black;
+  word-wrap: break-word;
+  white-space: normal;
+  max-height: 400px;
+  overflow-y: auto;
+}
+#validationModal .modal-title {
+  color: black;
+  word-wrap: break-word;
+  white-space: normal;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Estilo para el modal en general */
+#detailModal .modal-content {
+  max-width: 500px;
+  max-height: 80vh;
+  margin: auto;
 }

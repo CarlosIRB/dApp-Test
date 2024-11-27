@@ -1,5 +1,7 @@
 # Usa Node como imagen base
+FROM trufflesuite/ganache-cli:latest
 FROM node:16-bullseye-slim
+
 
 # Instala Ganache CLI globalmente
 RUN npm install -g ganache
